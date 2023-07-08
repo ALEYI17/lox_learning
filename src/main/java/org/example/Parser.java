@@ -114,6 +114,14 @@ public class Parser {
             consume(RIGHT_PAREN,"Expecteed ')'  after expression");
             return new Expr.Grouping(expr);
         }
+
+        if (match(MINUS, PLUS, SLASH, STAR, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+            Token operator = previous();
+            Expr right = unary();
+            lox.error(operator, "Binary operator without left-hand operand");
+            return new Expr.Binary(null, operator, right);
+        }
+
         throw  error(peek(), "Expected  expression");
     }
 
