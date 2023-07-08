@@ -43,10 +43,14 @@ public class lox {
     private static void run(String src){
         Scanner scanner = new Scanner(src);
         List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        Expr expression = parser.parse();
+        if(hadError)return;
 
-        for(Token token:tokens){
-            System.out.println(token);
-        }
+        System.out.println(new AstPrinter().print(expression));
+//        for(Token token:tokens){
+//            System.out.println(token);
+//        }
     }
     static void error(int line,String mensaje){
         report(line,"",mensaje);

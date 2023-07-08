@@ -4,7 +4,7 @@ import java.util.List;
 import static org.example.tokenType.TokenType.*;
 
 public class Parser {
-    private static class  parseError extends RuntimeException{}
+    private static class  ParseError extends RuntimeException{}
     private final List<Token> tokens;
     private int current = 0;
 
@@ -114,7 +114,7 @@ public class Parser {
             consume(RIGHT_PAREN,"Expecteed ')'  after expression");
             return new Expr.Grouping(expr);
         }
-        return null;
+        throw  error(peek(), "Expected  expression");
     }
 
     private Token consume(tokenType.TokenType type , String message){
@@ -122,9 +122,9 @@ public class Parser {
         throw error(peek(), message);
     }
 
-    private parseError error(Token token, String message){
+    private ParseError error(Token token, String message){
         lox.error(token,message);
-        return new parseError();
+        return new ParseError();
     }
 
     private void  syncronize(){
@@ -144,6 +144,16 @@ public class Parser {
                 case RETURN:
                 return;
             }
+            advance();
+        }
+    }
+
+    Expr parse(){
+        try {
+            return expression();
+        }
+        catch (ParseError error){
+            return  null;
         }
     }
 }
