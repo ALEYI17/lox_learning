@@ -55,4 +55,13 @@ public class lox {
         System.err.println("[line" + line +"]"+ "Error" + donde + ":" + mesg);
         hadError = true;
     }
+
+    static void error(Token token, String message){
+        if (token.type == tokenType.TokenType.EOF){
+            report(token.line , "at end" , message);
+
+        }else {
+            report(token.line,"at"+ token.lexme + "'" , message);
+        }
+    }
 }
