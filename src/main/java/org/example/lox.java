@@ -65,7 +65,7 @@ public class lox {
             report(token.line , "at end" , message);
 
         }else {
-            report(token.line,"at"+ token.lexme + "'" , message);
+            report(token.line," at "+ token.lexme + "'" , message);
         }
     }
 }
