@@ -14,7 +14,7 @@ public class Parser {
     }
 
     private Expr expression(){
-        return equality();
+        return assignment();
     }
 
     private Stmt declaration(){
@@ -54,6 +54,20 @@ public class Parser {
         Expr expr = expression();
         consume(SEMICOLON, "Expected ';' after expression.");
         return new Stmt.Expression(expr);
+    }
+
+    private Expr assignment(){
+        Expr expr = equality();
+        if(match(EQUAL)){
+            Token equal = previous();
+            Expr value = assignment();
+            if( expr instanceof Expr.Variable){
+                Token name = ((Expr.Variable)expr).name;
+                return new Expr.Assign(name,value);
+            }
+            error(equal, "Invalid assignment target.");
+        }
+        return expr;
     }
 
     private  Expr equality(){
@@ -206,4 +220,6 @@ public class Parser {
         }
         return statements;
     }
+
+
 }
