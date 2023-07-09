@@ -78,7 +78,7 @@ public class Interpreter implements Expr.Visitor<Object>{
                 checkNumberOperand(expr.operator,left,right);
                 return (double)left + (double) right;
             case BANG_EQUAL:return  !isEqual(left,right);
-            case EQUAL_EQUAL:return  !isEqual(left,right);
+            case EQUAL_EQUAL:return  isEqual(left,right);
         }
         return null;
     }
