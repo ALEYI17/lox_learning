@@ -17,6 +17,16 @@ public class Parser {
         return equality();
     }
 
+    private Stmt declaration(){
+        try {
+            if(match(LET)) return  varDeclaration();
+            return statement();
+        }catch (ParseError error){
+            syncronize();
+            return null;
+        }
+    }
+
     private Stmt statement(){
         if(match(PRINT)) return  printStatement();
         return  expressionStatement();
@@ -26,6 +36,18 @@ public class Parser {
         Expr value = expression();
         consume(SEMICOLON, "Expected ';' after value");
         return new Stmt.Print(value);
+    }
+
+    private Stmt varDeclaration(){
+        Token name = consume(IDENTIFIER, "Expected variable name.");
+
+        Expr intilializer =null;
+        if(match(EQUAL)){
+            intilializer = expression();
+        }
+
+        consume(SEMICOLON,"Expected ';' after variable declaration.");
+        return new  Stmt.Var(name,intilializer);
     }
 
     private Stmt expressionStatement(){
@@ -127,6 +149,9 @@ public class Parser {
         if(match(NUMBER,STRING)) {
             return new Expr.Literal(previous().literal);
         }
+        if(match(IDENTIFIER)){
+            return new Expr.Variable(previous());
+        }
         if (match(LEFT_PAREN)){
             Expr expr = expression();
             consume(RIGHT_PAREN,"Expecteed ')'  after expression");
@@ -177,7 +202,7 @@ public class Parser {
     List<Stmt> parse(){
         List<Stmt> statements = new ArrayList<>();
         while (!isAtEnd()){
-            statements.add(statement());
+            statements.add(declaration());
         }
         return statements;
     }
