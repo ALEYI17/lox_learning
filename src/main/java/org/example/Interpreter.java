@@ -94,6 +94,11 @@ public class Interpreter implements Expr.Visitor<Object>{
     }
 
     private void checkNumberOperand(Token operator , Object left,Object right){
+        if(operator.type == tokenType.TokenType.SLASH){
+            if(right instanceof Double){
+                if((double) right == 0) throw new RuntimeError(operator,"Right operand is 0 , and cant divide by 0");
+            }
+        }
         if (left instanceof Double && right instanceof Double) return;
         throw new RuntimeError(operator,"Operand must be numbers");
     }
