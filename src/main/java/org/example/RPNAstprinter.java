@@ -27,6 +27,11 @@ public class RPNAstprinter implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitlogicalExpr(Expr.logical expr) {
+        return null;
+    }
+
+    @Override
     public String visitUnaryExpr(Expr.Unary expr) {
         return expr.right.accept(this) + " " + expr.operator.lexme;
     }
