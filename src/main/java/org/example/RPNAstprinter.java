@@ -6,6 +6,11 @@ public class RPNAstprinter implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        return null;
+    }
+
+    @Override
     public String visitBinaryExpr(Expr.Binary expr) {
         return parenthesize(expr.left.accept(this) + " " + expr.right.accept(this) + " " + expr.operator.lexme);
     }
@@ -24,6 +29,11 @@ public class RPNAstprinter implements Expr.Visitor<String> {
     @Override
     public String visitUnaryExpr(Expr.Unary expr) {
         return expr.right.accept(this) + " " + expr.operator.lexme;
+    }
+
+    @Override
+    public String visitVariableExpr(Expr.Variable expr) {
+        return null;
     }
 
     private String parenthesize(String name , Expr ... exprs){

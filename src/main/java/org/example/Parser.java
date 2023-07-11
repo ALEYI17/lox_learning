@@ -1,6 +1,7 @@
 package org.example;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import static org.example.tokenType.TokenType.*;
 
@@ -28,7 +29,10 @@ public class Parser {
     }
 
     private Stmt statement(){
+        if (match(FOR)) return forStatement();
+        if(match(IF)) return ifStatement();
         if(match(PRINT)) return  printStatement();
+        if (match(WHILE)) return whileStatement();
         if(match(LEFT_BRACE)) return new Stmt.Block(block());
         return  expressionStatement();
     }
@@ -37,6 +41,30 @@ public class Parser {
         Expr value = expression();
         consume(SEMICOLON, "Expected ';' after value");
         return new Stmt.Print(value);
+    }
+
+    private Stmt whileStatement(){
+        consume(LEFT_PAREN,"Expected '(' after 'while'.");
+        Expr condition = expression();
+        consume(LEFT_PAREN,"Expected ')' after condition'.");
+
+        Stmt body = statement();
+
+        return new Stmt.While(condition,body);
+    }
+
+    private Stmt ifStatement(){
+        consume(LEFT_PAREN,"Expected '(' after  'if'.");
+        Expr condition = expression();
+        consume(RIGHT_BRACE,"Expected ')' after if condition.");
+
+        Stmt thenBranch = statement();
+        Stmt elseBranch = null;
+        if(match(ELSE)){
+            elseBranch = statement();
+        }
+
+        return new Stmt.If(condition,thenBranch,elseBranch);
     }
 
     private Stmt varDeclaration(){
@@ -67,7 +95,7 @@ public class Parser {
     }
 
     private Expr assignment(){
-        Expr expr = equality();
+        Expr expr = or();
         if(match(EQUAL)){
             Token equal = previous();
             Expr value = assignment();
@@ -76,6 +104,28 @@ public class Parser {
                 return new Expr.Assign(name,value);
             }
             error(equal, "Invalid assignment target.");
+        }
+        return expr;
+    }
+
+    private Expr or(){
+        Expr expr = and();
+
+        while (match(OR)){
+            Token operator = previous();
+            Expr right = and();
+            expr = new Expr.logical(expr,operator,right);
+        }
+        return expr;
+    }
+
+    private Expr and(){
+        Expr expr = equality();
+
+        while (match(AND)){
+             Token operator = previous();
+             Expr right = equality();
+             expr = new Expr.logical(expr,operator,right);
         }
         return expr;
     }
