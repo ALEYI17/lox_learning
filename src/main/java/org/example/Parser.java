@@ -20,6 +20,7 @@ public class Parser {
 
     private Stmt declaration(){
         try {
+            if (match(CLASS)) return classDeclaration();
             if (match(FUN)) return function("function");
             if(match(LET)) return  varDeclaration();
             return statement();
@@ -27,6 +28,19 @@ public class Parser {
             syncronize();
             return null;
         }
+    }
+
+    private Stmt classDeclaration(){
+        Token name =  consume(IDENTIFIER, "Expected class name.");
+        consume(LEFT_BRACE,"Expected '{' before class body");
+
+        List<Stmt.Function> methods = new ArrayList<>();
+        while (!check(RIGHT_BRACE) && !isAtEnd()){
+            methods.add(function("method"));
+        }
+
+        consume(RIGHT_BRACE,"Expected '}' after class body");
+        return new Stmt.Class(name,methods);
     }
 
     private Stmt statement(){
