@@ -35,4 +35,10 @@ public class LoxFunction implements LoxCallable{
     public String toString() {
         return "<fn" + declaration.name.lexme + ">";
     }
+
+    LoxFunction bind(LoxInstance instance){
+        Enviroment enviroment = new Enviroment(closure);
+        enviroment.define("this",instance);
+        return  new LoxFunction(declaration,enviroment);
+    }
 }

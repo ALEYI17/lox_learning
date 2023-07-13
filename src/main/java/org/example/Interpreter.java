@@ -137,6 +137,11 @@ public class Interpreter implements Expr.Visitor<Object> , Stmt.Visitor<Void>{
     }
 
     @Override
+    public Object visitThisExpr(Expr.This expr) {
+        return lookUpVriable(expr.keyword,expr);
+    }
+
+    @Override
     public Void visitWhileStmt(Stmt.While stmt) {
         while (isTruthy(evaluate(stmt.condition))){
             execute(stmt.body);
