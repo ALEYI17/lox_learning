@@ -23,4 +23,8 @@ public class LoxInstance {
 
         throw new RuntimeError(name,"Undefined property " + name.lexme+ ".");
     }
+
+    void set(Token name , Object value){
+        fields.put(name.lexme,value);
+    }
 }
