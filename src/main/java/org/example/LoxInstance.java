@@ -21,6 +21,9 @@ public class LoxInstance {
             return fields.get(name.lexme);
         }
 
+        LoxFunction method = klass.findMethod(name.lexme);
+        if(method != null) return method;
+
         throw new RuntimeError(name,"Undefined property " + name.lexme+ ".");
     }
 
