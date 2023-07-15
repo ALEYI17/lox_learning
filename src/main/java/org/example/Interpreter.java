@@ -81,12 +81,20 @@ public class Interpreter implements Expr.Visitor<Object> , Stmt.Visitor<Void>{
         }
         enviroment.define(stmt.name.lexme,null);
 
+        if(stmt.superclass != null){
+            enviroment = new Enviroment(enviroment);
+            enviroment.define("super",superclasss);
+        }
+
         Map<String,LoxFunction> methods  = new HashMap<>();
         for(Stmt.Function method: stmt.methods){
             LoxFunction function = new LoxFunction(method,enviroment,method.name.lexme.equals("init"));
         }
 
         LoxClass klass = new LoxClass(stmt.name.lexme,(LoxClass) superclasss,methods);
+        if(superclasss != null){
+            enviroment = enviroment.enclosing;
+        }
         enviroment.assign(stmt.name,klass);
 
         return null;
@@ -141,6 +149,18 @@ public class Interpreter implements Expr.Visitor<Object> , Stmt.Visitor<Void>{
         Object value =  evaluate(expr.value);
         ((LoxInstance) object).set(expr.name,value);
         return value;
+    }
+
+    @Override
+    public Object visitSuperExpr(Expr.Super expr) {
+        int distance = locals.get(expr);
+        LoxClass  superclass = (LoxClass) enviroment.getAt(distance,"super");
+        LoxInstance object = (LoxInstance) enviroment.getAt(distance -1 , "this");
+        LoxFunction method = superclass.findMethod(expr.method.lexme);
+        if (method  == null){
+            throw new RuntimeError(expr.method , "Undefined property'" + expr.method.lexme + "'.");
+        }
+        return method.bind(object);
     }
 
     @Override
